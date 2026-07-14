@@ -44,12 +44,15 @@ export default function Navbar() {
 
         {/* Desktop Buttons */}
         <div className="hidden md:flex items-center gap-4">
-          <button className="px-6 py-2.5 font-sans text-[14px] font-semibold tracking-wider text-[#46464a] hover:text-[#0a0a0b] transition-all duration-300 cursor-pointer">
+          <Link href="/login" className="px-6 py-2.5 font-sans text-[14px] font-semibold tracking-wider text-[#46464a] hover:text-[#0a0a0b] transition-all duration-300 cursor-pointer">
             Login
-          </button>
-          <button className="px-8 py-3 bg-[#0a0a0b] text-white rounded-xl font-sans text-[14px] font-semibold tracking-wider hover:bg-[#0a0a0b]/90 active:scale-95 transition-all duration-300 cursor-pointer shadow-sm">
+          </Link>
+          <Link
+            href="/register"
+            className="px-8 py-3 bg-[#0a0a0b] text-white rounded-xl font-sans text-[14px] font-semibold tracking-wider hover:bg-[#0a0a0b]/90 active:scale-95 transition-all duration-300 cursor-pointer shadow-sm text-center"
+          >
             Get Started
-          </button>
+          </Link>
         </div>
 
         {/* Mobile Toggle Button */}
@@ -98,18 +101,26 @@ export default function Navbar() {
           <div className="h-[1px] bg-[#c7c6ca]/20 my-2" />
 
           <div className="flex flex-col sm:flex-row gap-3">
-            <button
+            <Link
+              href="/login"
               onClick={() => setIsOpen(false)}
               className="w-full py-3 font-sans text-[15px] font-semibold tracking-wider text-[#46464a] hover:text-[#0a0a0b] text-center border border-transparent hover:bg-stone-50 rounded-xl transition-all duration-300 cursor-pointer"
             >
               Login
-            </button>
-            <button
+            </Link>
+            {/* <button
               onClick={() => setIsOpen(false)}
               className="w-full py-3 bg-[#0a0a0b] text-white font-sans text-[15px] font-semibold tracking-wider text-center rounded-xl hover:bg-[#0a0a0b]/90 active:scale-95 transition-all duration-300 cursor-pointer shadow-sm"
             >
               Get Started
-            </button>
+            </button> */}
+            <Link
+              href="/register"
+              onClick={() => setIsOpen(false)}
+              className="w-full py-3 bg-[#0a0a0b] text-white font-sans text-[15px] font-semibold tracking-wider text-center rounded-xl hover:bg-[#0a0a0b]/90 active:scale-95 transition-all duration-300 cursor-pointer shadow-sm"
+            >
+              Get Started
+            </Link>
           </div>
         </div>
       </div>
