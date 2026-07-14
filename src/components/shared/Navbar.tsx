@@ -30,11 +30,11 @@ export default function Navbar() {
   // Define navigation items dynamically based on auth state
   const navItems = [
     { path: "/", label: "Home" },
-    { path: "/product", label: "Product" },
+    { path: "/explore", label: "Explore" },
     { path: "/features", label: "Features" },
     ...(user
       ? [
-          { path: "/add-item", label: "Add Item", icon: PlusCircle },
+          { path: "/items/add", label: "Add Item", icon: PlusCircle },
           { path: "/manage-items", label: "Manage Items", icon: LayoutList },
         ]
       : []),
