@@ -2,15 +2,33 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Waves, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
+import {
+  Waves,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  Loader2,
+} from "lucide-react";
 
 export default function LoginPage() {
+  const router = useRouter();
+
   // 1. Password visibility toggle state
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<{
+    text: string;
+    isError: boolean;
+  } | null>(null);
 
-  // 2. Simplified Form submit handler getting values via e.target.name.value as requested
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  // 2. Form submit handler calling real Better Auth signIn.email
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setStatusMessage(null);
 
     // Grab elements from the event target using name key matching as requested
     const target = e.target as HTMLFormElement & {
@@ -22,17 +40,78 @@ export default function LoginPage() {
 
     // Simple validation checks
     if (!email || !password) {
-      alert("Please fill in all fields.");
+      setStatusMessage({ text: "Please fill in all fields.", isError: true });
       return;
     }
 
-    // Capture and log successfully
-    console.log("SUCCESSFULLY CAPTURED ALL LOGIN VALUES IN FUNCTION:", {
-      email,
-      password,
-    });
+    await authClient.signIn.email(
+      {
+        email,
+        password,
+        callbackURL: "/",
+        rememberMe: true,
+      },
+      {
+        onRequest: () => {
+          setIsSubmitting(true);
+        },
+        onSuccess: () => {
+          setIsSubmitting(false);
+          setStatusMessage({
+            text: "Logged in successfully! Welcome back.",
+            isError: false,
+          });
+          // Redirect to homepage after a brief moment to show success
+          setTimeout(() => {
+            router.push("/");
+            router.refresh();
+          }, 1200);
+        },
+        onError: (ctx) => {
+          setIsSubmitting(false);
+          setStatusMessage({ text: ctx.error.message, isError: true });
+          alert(ctx.error.message);
+        },
+      },
+    );
+  };
 
-    alert(`Login successful!\n\nEmail: ${email}\nPassword: [Hidden]`);
+  const handleDemoClick = async () => {
+    setStatusMessage(null);
+    await authClient.signIn.email(
+      {
+        email: "demo@auraflow.io",
+        password: "demopass123",
+        callbackURL: "/",
+      },
+      {
+        onRequest: () => {
+          setIsSubmitting(true);
+        },
+        onSuccess: () => {
+          setIsSubmitting(false);
+          setStatusMessage({
+            text: "Logged in with Demo Account!",
+            isError: false,
+          });
+          setTimeout(() => {
+            router.push("/");
+            router.refresh();
+          }, 1200);
+        },
+        onError: (ctx) => {
+          setIsSubmitting(false);
+          setStatusMessage({
+            text: "Failed to authenticate demo user. You may need to Sign Up with 'demo@auraflow.io' first if the database is fresh.",
+            isError: true,
+          });
+          alert(
+            ctx.error.message +
+              "\n\n(Hint: If this is a fresh database, please click Get Started and register 'demo@auraflow.io' first!)",
+          );
+        },
+      },
+    );
   };
 
   return (
@@ -72,6 +151,19 @@ export default function LoginPage() {
               </p>
             </div>
 
+            {/* Notification Banner */}
+            {statusMessage && (
+              <div
+                className={`mb-6 p-4 rounded-xl text-sm font-medium transition-all ${
+                  statusMessage.isError
+                    ? "bg-[#ffdad6] text-[#93000a] border border-[#ffdad6]"
+                    : "bg-[#6ffbbe]/15 text-[#005236] border border-[#6ffbbe]/30"
+                }`}
+              >
+                {statusMessage.text}
+              </div>
+            )}
+
             {/* Login Form */}
             <form className="space-y-6" onSubmit={handleSubmit}>
               {/* Email Field */}
@@ -92,6 +184,7 @@ export default function LoginPage() {
                     name="email"
                     placeholder="name@company.com"
                     type="email"
+                    disabled={isSubmitting}
                     required
                   />
                 </div>
@@ -123,6 +216,7 @@ export default function LoginPage() {
                     name="password"
                     placeholder="••••••••"
                     type={showPassword ? "text" : "password"}
+                    disabled={isSubmitting}
                     required
                   />
                   <button
@@ -148,6 +242,7 @@ export default function LoginPage() {
                     id="remember"
                     name="remember"
                     type="checkbox"
+                    disabled={isSubmitting}
                   />
                 </div>
                 <label
@@ -161,19 +256,27 @@ export default function LoginPage() {
               {/* Primary Actions */}
               <div className="space-y-4 pt-2">
                 <button
-                  className="w-full h-14 bg-black text-white font-sans text-[14px] font-semibold tracking-wider rounded-xl hover:bg-[#4648d4] transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                  className="w-full h-14 bg-black text-white font-sans text-[14px] font-semibold tracking-wider rounded-xl hover:bg-[#4648d4] transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:bg-stone-400 disabled:cursor-not-allowed"
                   type="submit"
+                  disabled={isSubmitting}
                 >
-                  Login to AuraFlow
-                  <ArrowRight className="w-4 h-4" />
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Authenticating...
+                    </>
+                  ) : (
+                    <>
+                      Login to AuraFlow
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
                 </button>
                 <button
-                  className="w-full h-14 border border-[#c7c6ca] text-black font-sans text-[14px] font-semibold rounded-xl hover:bg-[#f3f4f5] transition-all active:scale-[0.98] cursor-pointer"
+                  className="w-full h-14 border border-[#c7c6ca] text-black font-sans text-[14px] font-semibold rounded-xl hover:bg-[#f3f4f5] transition-all active:scale-[0.98] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   type="button"
-                  onClick={() => {
-                    alert("Logged in using demo credentials!");
-                    console.log("SUCCESSFULLY LOGGED IN WITH DEMO CREDENTIALS");
-                  }}
+                  onClick={handleDemoClick}
+                  disabled={isSubmitting}
                 >
                   Demo Login
                 </button>
@@ -190,11 +293,14 @@ export default function LoginPage() {
 
               {/* Social Login */}
               <button
-                className="w-full h-14 bg-white border border-[#c7c6ca]/50 text-black font-sans text-[14px] font-semibold rounded-xl hover:bg-[#f3f4f5] transition-all active:scale-[0.98] flex items-center justify-center gap-3 cursor-pointer"
+                className="w-full h-14 bg-white border border-[#c7c6ca]/50 text-black font-sans text-[14px] font-semibold rounded-xl hover:bg-[#f3f4f5] transition-all active:scale-[0.98] flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 type="button"
                 onClick={() => {
-                  alert("Google OAuth connection is ready to configure.");
+                  alert(
+                    "Google OAuth connection is ready to configure. In development mode, please use Email/Password sign up or the pre-loaded Demo account.",
+                  );
                 }}
+                disabled={isSubmitting}
               >
                 <svg
                   className="w-5 h-5"

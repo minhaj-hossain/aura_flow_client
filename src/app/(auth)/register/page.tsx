@@ -2,12 +2,21 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Waves, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
+import { Waves, Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 
 export default function RegisterPage() {
+  const router = useRouter();
+
   // 1. Uncomplicated visibility toggles for passwords
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<{
+    text: string;
+    isError: boolean;
+  } | null>(null);
 
   // 2. Simple state just to compute password strength on typing
   const [passwordInput, setPasswordInput] = useState("");
@@ -54,8 +63,9 @@ export default function RegisterPage() {
   const passwordStrength = getPasswordStrength();
 
   // Simplified form submission handler using target elements
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setStatusMessage(null);
 
     // Accessing elements directly from the HTMLFormElement target
     const form = e.currentTarget;
@@ -70,30 +80,51 @@ export default function RegisterPage() {
 
     // Direct, clear validation checks
     if (!fullName || !email || !password || !confirmPassword) {
-      alert("Please fill in all fields.");
+      setStatusMessage({ text: "Please fill in all fields.", isError: true });
       return;
     }
 
     if (password.length < 8) {
-      alert("Password must be at least 8 characters long.");
+      setStatusMessage({
+        text: "Password must be at least 8 characters long.",
+        isError: true,
+      });
       return;
     }
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match.");
+      setStatusMessage({ text: "Passwords do not match.", isError: true });
       return;
     }
 
-    // Capture and log successfully
-    console.log("SUCCESSFULLY CAPTURED ALL REGISTRATION VALUES IN FUNCTION:", {
-      fullName,
-      email,
-      password,
-      confirmPassword,
-    });
-
-    alert(
-      `Account created successfully!\n\nName: ${fullName}\nEmail: ${email}\nPassword: [Hidden]`,
+    await authClient.signUp.email(
+      {
+        email,
+        password,
+        name: fullName,
+        callbackURL: "/",
+      },
+      {
+        onRequest: () => {
+          setIsSubmitting(true);
+        },
+        onSuccess: () => {
+          setIsSubmitting(false);
+          setStatusMessage({
+            text: "Account created successfully! Redirecting...",
+            isError: false,
+          });
+          setTimeout(() => {
+            router.push("/");
+            router.refresh();
+          }, 1500);
+        },
+        onError: (ctx) => {
+          setIsSubmitting(false);
+          setStatusMessage({ text: ctx.error.message, isError: true });
+          alert(ctx.error.message);
+        },
+      },
     );
   };
 
@@ -125,6 +156,19 @@ export default function RegisterPage() {
               </p>
             </div>
 
+            {/* Notification Banner */}
+            {statusMessage && (
+              <div
+                className={`mb-6 p-4 rounded-xl text-sm font-medium transition-all ${
+                  statusMessage.isError
+                    ? "bg-[#ffdad6] text-[#93000a] border border-[#ffdad6]"
+                    : "bg-[#6ffbbe]/15 text-[#005236] border border-[#6ffbbe]/30"
+                }`}
+              >
+                {statusMessage.text}
+              </div>
+            )}
+
             {/* Registration Form */}
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Full Name Field */}
@@ -137,11 +181,12 @@ export default function RegisterPage() {
                 </label>
                 <div className="relative">
                   <input
-                    className="w-full h-14 bg-[#f3f4f5] border border-[#c7c6ca]/30 focus:ring-[#4648d4]/20 rounded-xl px-5 py-2 font-sans text-[15px] focus:border-[#4648d4] focus:ring-1 transition-all outline-none text-[#191c1d] placeholder:text-[#77777b]/40"
+                    className="w-full h-14 bg-[#f3f4f5] border border-[#c7c6ca]/30 focus:ring-[#4648d4]/20 rounded-xl px-5 py-2 font-sans text-[15px] focus:border-[#4648d4] focus:ring-1 transition-all outline-none text-[#191c1d] placeholder:text-[#77777b]/40 disabled:opacity-50"
                     id="fullName"
                     name="fullName"
                     placeholder="Jane Cooper"
                     type="text"
+                    disabled={isSubmitting}
                     required
                   />
                 </div>
@@ -157,11 +202,12 @@ export default function RegisterPage() {
                 </label>
                 <div className="relative">
                   <input
-                    className="w-full h-14 bg-[#f3f4f5] border border-[#c7c6ca]/30 focus:ring-[#4648d4]/20 rounded-xl px-5 py-2 font-sans text-[15px] focus:border-[#4648d4] focus:ring-1 transition-all outline-none text-[#191c1d] placeholder:text-[#77777b]/40"
+                    className="w-full h-14 bg-[#f3f4f5] border border-[#c7c6ca]/30 focus:ring-[#4648d4]/20 rounded-xl px-5 py-2 font-sans text-[15px] focus:border-[#4648d4] focus:ring-1 transition-all outline-none text-[#191c1d] placeholder:text-[#77777b]/40 disabled:opacity-50"
                     id="email"
                     name="email"
                     placeholder="jane@auraflow.io"
                     type="email"
+                    disabled={isSubmitting}
                     required
                   />
                 </div>
@@ -177,19 +223,21 @@ export default function RegisterPage() {
                 </label>
                 <div className="relative">
                   <input
-                    className="w-full h-14 bg-[#f3f4f5] border border-[#c7c6ca]/30 focus:ring-[#4648d4]/20 rounded-xl px-5 py-2 font-sans text-[15px] focus:border-[#4648d4] focus:ring-1 transition-all outline-none text-[#191c1d] pr-12 placeholder:text-[#77777b]/40"
+                    className="w-full h-14 bg-[#f3f4f5] border border-[#c7c6ca]/30 focus:ring-[#4648d4]/20 rounded-xl px-5 py-2 font-sans text-[15px] focus:border-[#4648d4] focus:ring-1 transition-all outline-none text-[#191c1d] pr-12 placeholder:text-[#77777b]/40 disabled:opacity-50"
                     id="password"
                     name="password"
                     placeholder="••••••••"
                     type={showPassword ? "text" : "password"}
                     value={passwordInput}
                     onChange={(e) => setPasswordInput(e.target.value)}
+                    disabled={isSubmitting}
                     required
                   />
                   <button
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-[#46464a]/50 hover:text-[#4648d4] transition-colors p-1 cursor-pointer"
                     onClick={() => setShowPassword(!showPassword)}
                     type="button"
+                    disabled={isSubmitting}
                     aria-label="Toggle password visibility"
                   >
                     {showPassword ? (
@@ -231,17 +279,19 @@ export default function RegisterPage() {
                 </label>
                 <div className="relative">
                   <input
-                    className="w-full h-14 bg-[#f3f4f5] border border-[#c7c6ca]/30 focus:ring-[#4648d4]/20 rounded-xl px-5 py-2 font-sans text-[15px] focus:border-[#4648d4] focus:ring-1 transition-all outline-none text-[#191c1d] pr-12 placeholder:text-[#77777b]/40"
+                    className="w-full h-14 bg-[#f3f4f5] border border-[#c7c6ca]/30 focus:ring-[#4648d4]/20 rounded-xl px-5 py-2 font-sans text-[15px] focus:border-[#4648d4] focus:ring-1 transition-all outline-none text-[#191c1d] pr-12 placeholder:text-[#77777b]/40 disabled:opacity-50"
                     id="confirmPassword"
                     name="confirmPassword"
                     placeholder="••••••••"
                     type={showConfirmPassword ? "text" : "password"}
+                    disabled={isSubmitting}
                     required
                   />
                   <button
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-[#46464a]/50 hover:text-[#4648d4] transition-colors p-1 cursor-pointer"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     type="button"
+                    disabled={isSubmitting}
                     aria-label="Toggle password visibility"
                   >
                     {showConfirmPassword ? (
@@ -255,11 +305,21 @@ export default function RegisterPage() {
 
               {/* Submit Button */}
               <button
-                className="w-full h-14 bg-[#0a0a0b] text-white font-sans text-[14px] font-semibold tracking-wider rounded-xl hover:bg-[#4648d4] active:scale-[0.98] transition-all shadow-lg hover:shadow-[#4648d4]/20 flex items-center justify-center gap-2 mt-8 cursor-pointer"
+                className="w-full h-14 bg-[#0a0a0b] text-white font-sans text-[14px] font-semibold tracking-wider rounded-xl hover:bg-[#4648d4] active:scale-[0.98] transition-all shadow-lg hover:shadow-[#4648d4]/20 flex items-center justify-center gap-2 mt-8 cursor-pointer disabled:bg-stone-400 disabled:cursor-not-allowed"
                 type="submit"
+                disabled={isSubmitting}
               >
-                Create Account
-                <ArrowRight className="w-4 h-4" />
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Creating Account...
+                  </>
+                ) : (
+                  <>
+                    Create Account
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
               </button>
 
               {/* Divider */}
@@ -273,13 +333,14 @@ export default function RegisterPage() {
 
               {/* Google OAuth Access */}
               <button
-                className="w-full h-14 bg-white border border-[#c7c6ca]/30 text-[#0a0a0b] font-sans text-[14px] font-semibold tracking-wider rounded-xl hover:bg-[#f3f4f5] transition-all flex items-center justify-center gap-3 cursor-pointer"
+                className="w-full h-14 bg-white border border-[#c7c6ca]/30 text-[#0a0a0b] font-sans text-[14px] font-semibold tracking-wider rounded-xl hover:bg-[#f3f4f5] transition-all flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50"
                 type="button"
                 onClick={() => {
                   alert(
-                    "OAuth integration to Google Accounts is ready to configure.",
+                    "Google OAuth connection is ready to configure. In development mode, please use Email/Password sign up or the pre-loaded Demo account.",
                   );
                 }}
+                disabled={isSubmitting}
               >
                 <svg
                   fill="none"
