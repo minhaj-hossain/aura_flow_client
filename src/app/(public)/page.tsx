@@ -1,4 +1,5 @@
 
+import FeaturedSection from "@/components/homepage/FeaturedSection";
 import Hero from "@/components/homepage/Hero";
 
 export default function Home() {
@@ -7,6 +8,7 @@ export default function Home() {
      
   
       <Hero />
+      <FeaturedSection/>
 
     </div>
   );

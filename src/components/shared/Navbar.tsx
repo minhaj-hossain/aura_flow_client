@@ -35,7 +35,7 @@ export default function Navbar() {
     ...(user
       ? [
           { path: "/items/add", label: "Add Item", icon: PlusCircle },
-          { path: "/manage-items", label: "Manage Items", icon: LayoutList },
+          { path: "/items/manage", label: "Manage Items", icon: LayoutList },
         ]
       : []),
   ];

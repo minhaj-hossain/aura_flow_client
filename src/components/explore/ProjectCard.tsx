@@ -1,6 +1,6 @@
-
 "use client";
 
+import Link from "next/link";
 import React from "react";
 
 export default function ProjectCard({ template }: { template: any }) {
@@ -28,9 +28,11 @@ export default function ProjectCard({ template }: { template: any }) {
         <p className="font-['Inter'] text-[16px] text-[#46464a] mb-6 line-clamp-2">
           {template.description}
         </p>
-        <button className="mt-auto w-full h-12 bg-[#000000] text-[#ffffff] rounded-xl font-semibold text-[14px] hover:bg-[#4648d4] transition-all active:scale-95">
-          View Project
-        </button>
+        <Link href={`/items/${template.id}`} className="mt-auto">
+          <button className="mt-auto w-full h-12 bg-[#000000] text-[#ffffff] rounded-xl font-semibold text-[14px] hover:bg-[#4648d4] transition-all active:scale-95">
+            View Project
+          </button>
+        </Link>
       </div>
     </div>
   );
