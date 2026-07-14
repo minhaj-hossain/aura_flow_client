@@ -7,9 +7,9 @@
   --primary-foreground: #ffffff;
   --secondary: #4648d4;
   --secondary-foreground: #ffffff;
-  --accent: #6366f1;
-  --success: #10b981;
-
+  --accent: #6366F1;
+  --success: #10B981;
+  
   --surface-lowest: #ffffff;
   --surface-low: #f3f4f5;
   --surface-container: #edeeef;
@@ -26,7 +26,7 @@
   --color-secondary-foreground: var(--secondary-foreground);
   --color-accent: var(--accent);
   --color-success: var(--success);
-
+  
   --color-surface-lowest: var(--surface-lowest);
   --color-surface-low: var(--surface-low);
   --color-surface-normal: var(--surface-container);
