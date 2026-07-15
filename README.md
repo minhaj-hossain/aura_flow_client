@@ -1,6 +1,6 @@
 # AuraFlow Full-Stack Web Application
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit%20App-4648d4?style=for-the-badge)](https://your-live-link-placeholder.com)
+[![Live Demo](https://aura-flow-client-iota.vercel.app)](https://aura-flow-client-iota.vercel.app)
 [![Next.js](https://img.shields.io/badge/Next.js-16.0-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![Express.js](https://img.shields.io/badge/Express.js-4.x-lightgrey?style=for-the-badge&logo=express)](https://expressjs.com/)
@@ -12,9 +12,9 @@ A modern, fully responsive, production-quality full-stack web application design
 
 ## 🚀 Live Demo & Repository Links
 
-- **Live Production Link:** [https://your-live-link-placeholder.com](https://your-live-link-placeholder.com) _(Placeholder)_
-- **Frontend Repository:** [https://github.com/your-username/auraflow-client](https://github.com/your-username/auraflow-client)
-- **Backend Repository:** [https://github.com/your-username/auraflow-server](https://github.com/your-username/auraflow-server)
+- **Live Production Link:** [https://aura-flow-client-iota.vercel.app](https://aura-flow-client-iota.vercel.app)
+- **Frontend Repository:** [https://github.com/minhaj-hossain/aura_flow_client](https://github.com/minhaj-hossain/aura_flow_client)
+- **Backend Repository:** [https://github.com/minhaj-hossain/aura_flow_server](https://github.com/minhaj-hossain/aura_flow_server)
 
 ---
 
