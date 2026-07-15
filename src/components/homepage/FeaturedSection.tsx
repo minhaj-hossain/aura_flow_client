@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { ArrowBigDown, ArrowRight } from "lucide-react";
 
 interface TemplateItem {
   id: string;
@@ -67,7 +68,7 @@ export default function FeaturedSection() {
         >
           <span>Browse Full Library</span>
           <span className="material-symbols-outlined ml-2 text-[18px] group-hover:translate-x-1 transition-transform">
-            arrow_forward
+            <ArrowRight />
           </span>
         </Link>
       </div>
@@ -145,7 +146,7 @@ function FeaturedCard({ item }: { item: TemplateItem }) {
 
         {/* Action Button */}
         <Link href={`/items/${item.id}`} className="mt-auto">
-          <button   className="w-full h-11 border border-[#000000] text-[#000000] rounded-xl font-['Inter'] font-semibold text-[13px] hover:bg-[#000000] hover:text-[#ffffff] transition-all duration-200 active:scale-[0.98]">
+          <button className="w-full h-11 border border-[#000000] text-[#000000] rounded-xl font-['Inter'] font-semibold text-[13px] hover:bg-[#000000] hover:text-[#ffffff] transition-all duration-200 active:scale-[0.98]">
             View Details
           </button>
         </Link>

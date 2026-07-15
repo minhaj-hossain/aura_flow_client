@@ -18,6 +18,7 @@ import {
   Bookmark,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 
 export default function AddItemPage() {
   const router = useRouter();
@@ -111,7 +112,8 @@ export default function AddItemPage() {
 
       setTimeout(() => {
         setSuccess(false);
-        router.push("/manage-items");
+        toast.success("Successfully created!");
+        router.push("/items/manage");
       }, 1500);
     } catch (err: any) {
       console.error("Submission Error:", err);

@@ -4,7 +4,8 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import DeleteConfirmModal from "@/components/manage/DeleteConfirmModal";
-// import DeleteConfirmModal from "@/components/DeleteConfirmModal";
+import toast from "react-hot-toast";
+
 
 interface AssetItem {
   id: string;
@@ -28,7 +29,7 @@ export default function ManageAssetsPage() {
     title: string;
   } | null>(null);
 
-  // Fetch only user created assets
+
   // Fetch only user created assets
   useEffect(() => {
     async function fetchUserAssets() {
@@ -65,6 +66,7 @@ export default function ManageAssetsPage() {
 
   const handleDeleteSuccess = (deletedId: string) => {
     setItems((prevItems) => prevItems.filter((item) => item.id !== deletedId));
+    toast.success("Successfully deleted!");
     setIsDeleteModalOpen(false);
     setItemToDelete(null);
   };

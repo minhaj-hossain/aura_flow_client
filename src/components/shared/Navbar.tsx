@@ -31,7 +31,7 @@ export default function Navbar() {
   const navItems = [
     { path: "/", label: "Home" },
     { path: "/explore", label: "Explore" },
-    { path: "/features", label: "Features" },
+    { path: "/about", label: "About" },
     ...(user
       ? [
           { path: "/items/add", label: "Add Item", icon: PlusCircle },
@@ -47,7 +47,7 @@ export default function Navbar() {
         <div className="flex-1 flex justify-start">
           <Link
             href="/"
-            className="font-display text-[24px] font-bold tracking-tighter text-[#4648d4] transition-all duration-300 hover:opacity-85 whitespace-nowrap"
+            className="font-display text-[24px] font-bold tracking-tighter  transition-all duration-300 hover:opacity-85 whitespace-nowrap"
           >
             AuraFlow
           </Link>
