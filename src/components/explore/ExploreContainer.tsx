@@ -48,7 +48,7 @@ export default function ExploreContainer() {
       });
 
       // 🛠️ CHANGE THIS PORT (e.g., 5000 or 8080) to match your Express server's port
-      const EXPRESS_BACKEND_URL = `http://localhost:8000/api/items?${queryParams.toString()}`;
+      const EXPRESS_BACKEND_URL = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/items?${queryParams.toString()}`;
 
       console.log(
         "📡 Frontend is attempting to fetch from:",

@@ -34,7 +34,7 @@ export default function ManageAssetsPage() {
   useEffect(() => {
     async function fetchUserAssets() {
       try {
-        const res = await fetch("http://localhost:8000/api/items/manage");
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/items/manage`);
         if (!res.ok) throw new Error("Failed to fetch assets");
 
         const data = await res.json();

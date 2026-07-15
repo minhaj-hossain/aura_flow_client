@@ -28,7 +28,9 @@ export default function ItemDetailsPage() {
 
     async function fetchAssetDetails() {
       try {
-        const res = await fetch(`http://localhost:8000/api/items/${id}`);
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/api/items/${id}`,
+        );
         if (!res.ok) throw new Error("Data retrieval broken");
         const data = await res.json();
         setItem(data);

@@ -24,12 +24,15 @@ export default function DeleteConfirmModal({
 
     try {
       // ⚠️ FIX: You must explicitly target port 8000, just like your GET fetch does!
-      const res = await fetch(`http://localhost:8000/api/items/${itemId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/items/${itemId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-      });
+      );
 
       // Handle cases where the server returns an error status code
       if (!res.ok) {

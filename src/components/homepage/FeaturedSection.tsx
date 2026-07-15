@@ -24,8 +24,11 @@ export default function FeaturedSection() {
     async function fetchTopFour() {
       try {
         // Appends exact parameters to grab only the top 4 newest assets
+
+        console.log(process.env.NEXT_PUBLIC_SERVER_URL);
+
         const res = await fetch(
-          "http://localhost:8000/api/items?limit=4&sortBy=newest",
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/api/items?limit=4&sortBy=newest`,
         );
         if (!res.ok) throw new Error("Failed execution");
         const data = await res.json();

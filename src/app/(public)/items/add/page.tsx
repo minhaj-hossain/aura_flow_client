@@ -81,22 +81,25 @@ export default function AddItemPage() {
 
     try {
       // 📡 Hit your Express backend server endpoint
-      const response = await fetch("http://localhost:8000/api/items", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/items`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: title,
+            category: "Productivity",
+            description: `${shortDescription}\n\n${fullDescription}`,
+            priority,
+            price: Number(price),
+            imageUrl: imageUrl.trim() || undefined,
+            userEmail: session.user.email, // Bind the item to the currently logged in session user
+            date: new Date(date).toISOString(),
+          }),
         },
-        body: JSON.stringify({
-          name: title,
-          category: "Productivity",
-          description: `${shortDescription}\n\n${fullDescription}`,
-          priority,
-          price: Number(price),
-          imageUrl: imageUrl.trim() || undefined,
-          userEmail: session.user.email, // Bind the item to the currently logged in session user
-          date: new Date(date).toISOString(),
-        }),
-      });
+      );
 
       const data = await response.json();
 
