@@ -15,7 +15,6 @@ export default function PublicLayout({
 
       <div className="flex-grow">{children}</div>
 
-      {/* Shared Footer in Public Layout */}
       <Footer />
     </div>
   );

@@ -14,6 +14,7 @@ import {
   LayoutList,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -110,7 +111,20 @@ export default function Navbar() {
                   aria-label="User Profile Menu"
                 >
                   <div className="relative w-full h-full flex items-center justify-center">
-                    <Mail className="w-5 h-5" />
+                    {user.image ? (
+                      <Image
+                        src={user?.image}
+                        width={48}
+                        height={48}
+                        referrerPolicy="no-referrer"
+                        alt="User Profile"
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                    ) : (
+                      <span className="text-lg font-bold">
+                        {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+                      </span>
+                    )}  
                     <span className="absolute bottom-1 right-1 w-2.5 h-2.5 bg-emerald-500 border border-white rounded-full" />
                   </div>
                 </button>
@@ -210,11 +224,7 @@ export default function Navbar() {
                     : "text-[#46464a] hover:bg-[#f3f4f5] hover:text-[#4648d4]"
                 }`}
               >
-                {/* {Icon && (
-                  <Icon
-                    className={`w-4 h-4 ${isActive ? "text-[#4648d4]" : ""}`}
-                  />
-                )} */}
+               
                 {item.label}
               </Link>
             );

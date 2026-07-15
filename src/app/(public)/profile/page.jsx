@@ -1,23 +1,33 @@
 import React from "react";
 import Link from "next/link";
+import { headers } from "next/headers"; // 1. Import Next.js headers utility
+import { auth } from "@/lib/auth"; // 2. Import your SERVER auth instance (not client)
 import Navbar from "@/components/shared/Navbar";
-import { requireAuth } from "@/proxy";
 import { User, Mail, Shield, ArrowLeft } from "lucide-react";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
 export default async function ProfilePage() {
-  // Enforce session check on server-side using Better Auth Proxy
-  const session = await requireAuth();
+  // 3. Fetch the session directly on the server using awaited headers
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  // 4. If no active session is found, redirect them immediately to sign-in
+  if (!session || !session.user) {
+    redirect("/sign-in");
+  }
+
   const user = session.user;
 
   return (
     <>
-      <Navbar />
-      <main className="min-h-screen pt-32 pb-20 bg-gradient-to-b from-[#fafafb] to-[#f3f4f6]">
+      {/* <Navbar /> */}
+      <main className="min-h-screen pt-32 pb-20 bg-linear-to-b from-[#fafafb] to-[#f3f4f6]">
         <div className="max-w-2xl mx-auto px-5">
           <div className="mb-8">
-            <Link 
+            <Link
               href="/"
               className="inline-flex items-center gap-2 text-sm font-semibold text-[#46464a] hover:text-[#4648d4] transition-all"
             >
@@ -39,7 +49,7 @@ export default async function ProfilePage() {
               </p>
               <div className="inline-flex items-center gap-1.5 mt-3 px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full border border-emerald-100">
                 <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                Session Active (Better Auth)
+                Session Active
               </div>
             </div>
 
@@ -47,13 +57,17 @@ export default async function ProfilePage() {
               <h2 className="font-display text-lg font-bold text-[#191c1d] mb-2">
                 Account Credentials
               </h2>
-              
+
               <div className="flex items-center justify-between p-4 bg-[#f8f9fa] rounded-2xl border border-gray-100">
                 <div className="flex items-center gap-3">
                   <User className="w-5 h-5 text-[#4648d4]" />
                   <div>
-                    <p className="text-xs text-[#46464a] font-medium">Display Name</p>
-                    <p className="text-sm font-semibold text-[#191c1d]">{user.name}</p>
+                    <p className="text-xs text-[#46464a] font-medium">
+                      Display Name
+                    </p>
+                    <p className="text-sm font-semibold text-[#191c1d]">
+                      {user.name}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -62,8 +76,12 @@ export default async function ProfilePage() {
                 <div className="flex items-center gap-3">
                   <Mail className="w-5 h-5 text-[#4648d4]" />
                   <div>
-                    <p className="text-xs text-[#46464a] font-medium">Registered Email</p>
-                    <p className="text-sm font-semibold text-[#191c1d]">{user.email}</p>
+                    <p className="text-xs text-[#46464a] font-medium">
+                      Registered Email
+                    </p>
+                    <p className="text-sm font-semibold text-[#191c1d]">
+                      {user.email}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -72,17 +90,15 @@ export default async function ProfilePage() {
                 <div className="flex items-center gap-3">
                   <Shield className="w-5 h-5 text-[#4648d4]" />
                   <div>
-                    <p className="text-xs text-[#46464a] font-medium">Unique User ID</p>
-                    <p className="text-xs font-mono text-[#191c1d]">{user.id}</p>
+                    <p className="text-xs text-[#46464a] font-medium">
+                      Unique User ID
+                    </p>
+                    <p className="text-xs font-mono text-[#191c1d]">
+                      {user.id}
+                    </p>
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div className="pt-4 border-t border-gray-100 flex justify-end">
-              <p className="text-xs text-gray-400 font-medium">
-                Powered by Better Auth & MongoDB
-              </p>
             </div>
           </div>
         </div>
